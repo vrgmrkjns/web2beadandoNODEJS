@@ -2,7 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-// MIME típusok meghatározása
+// MIME típusok meghatározásatesztteszt
 const mimeTypes = {
     '.html': 'text/html',
     '.css': 'text/css',
