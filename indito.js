@@ -1,6 +1,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const mysql = require('mysql2/promise');
 
 // MIME típusok meghatározásatesztteszt
 const mimeTypes = {
@@ -11,6 +12,20 @@ const mimeTypes = {
     '.jpg': 'image/jpeg',
     '.gif': 'image/gif',
 };
+
+async function adatbazisCsatlakozas() {
+    const connection = await mysql.createConnection({
+      host: 'localhost',
+      user: 'root',
+      password: '',
+      database: 'web2beadando2'
+    });
+  
+    console.log('Sikeresen csatlakoztál az adatbázishoz!');
+    await connection.end();
+  }
+
+  adatbazisCsatlakozas().catch(err => console.error('Hiba: ', err));
 
 // A szerver létrehozása
 const server = http.createServer((req, res) => {
