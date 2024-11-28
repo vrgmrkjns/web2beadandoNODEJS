@@ -40,6 +40,10 @@ const server = http.createServer((req, res) => {
     });
 });
 
+
+
+
+
 // Szerver futtatása
 const PORT = 3000;
 server.listen(PORT, () => {
