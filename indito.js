@@ -26,11 +26,11 @@ const server = http.createServer((req, res) => {
             if (err.code === 'ENOENT') {
                 // Ha a fájl nem található
                 res.writeHead(404, { 'Content-Type': 'text/html' });
-                res.end('<h1>404 - File Not Found</h1>', 'utf-8');
+                res.end('<h1>404 - Oldal nem található</h1>', 'utf-8');
             } else {
                 // Egyéb hiba
                 res.writeHead(500);
-                res.end(`Server Error: ${err.code}`);
+                res.end(`Hiba: ${err.code}`);
             }
         } else {
             // Fájl sikeres olvasása
@@ -43,5 +43,5 @@ const server = http.createServer((req, res) => {
 // Szerver futtatása
 const PORT = 3000;
 server.listen(PORT, () => {
-    console.log(`Server is running at http://localhost:${PORT}`);
+    console.log(`fut http://localhost:${PORT}`);
 });
