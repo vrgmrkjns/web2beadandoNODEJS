@@ -26,8 +26,8 @@ let db;
 async function adatbazisCsatlakozas() {
     db = await mysql.createConnection({
         host: 'localhost',
-        user: 'root',       // A felhasználóneved
-        password: '',       // A jelszavad
+        user: 'root',
+        password: '',
         database: 'web2beadando2'
     });
     console.log('Sikeresen csatlakoztál az adatbázishoz!');
@@ -56,8 +56,13 @@ app.post('/contact', async (req, res) => {
 });
 
 
-// Statikus fájlok kiszolgálása (index.html, contact.html stb.)
+// Statikus fájlok kiszolgálása
 app.use(express.static(path.join(__dirname, 'public')));
+
+// 404-es oldal kezelése
+app.use((req, res) => {
+    res.status(404).sendFile(path.join(__dirname, 'public', '404.html'));
+});
 
 // Szerver indítása
 const PORT = 3000;
