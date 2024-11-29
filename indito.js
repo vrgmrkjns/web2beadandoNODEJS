@@ -1,9 +1,9 @@
-const http = require('http');
-const fs = require('fs');
-const path = require('path');
+const express = require('express');
 const mysql = require('mysql2/promise');
+const path = require('path');
+const bodyParser = require('body-parser');
 
-// MIME típusok meghatározásatesztteszt
+// MIME típusok meghatározása
 const mimeTypes = {
     '.html': 'text/html',
     '.css': 'text/css',
@@ -13,54 +13,54 @@ const mimeTypes = {
     '.gif': 'image/gif',
 };
 
+// Express alkalmazás létrehozása
+const app = express();
+
+// Body parser beállítása
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(bodyParser.json());
+
+// MySQL kapcsolat
+let db;
+
 async function adatbazisCsatlakozas() {
-    const connection = await mysql.createConnection({
-      host: 'localhost',
-      user: 'root',
-      password: '',
-      database: 'web2beadando2'
+    db = await mysql.createConnection({
+        host: 'localhost',
+        user: 'root',       // A felhasználóneved
+        password: '',       // A jelszavad
+        database: 'web2beadando2'
     });
-  
     console.log('Sikeresen csatlakoztál az adatbázishoz!');
-    await connection.end();
-  }
+}
 
-  adatbazisCsatlakozas().catch(err => console.error('Hiba: ', err));
+adatbazisCsatlakozas().catch(err => console.error('Hiba a csatlakozás során:', err));
 
-// A szerver létrehozása
-const server = http.createServer((req, res) => {
-    let filePath = path.join(__dirname, 'public', req.url === '/' ? 'index.html' : req.url);
-    const extname = path.extname(filePath);
+// Kapcsolatfelvételi űrlap kezelése
+app.post('/contact', async (req, res) => {
+    let { nev, email, uzenet } = req.body;
 
-    // MIME típus alapú válasz
-    const contentType = mimeTypes[extname] || 'application/octet-stream';
+    // Adatok ellenőrzése
+    nev = nev || null;
+    email = email || null;
+    uzenet = uzenet || null;
 
-    // Fájl olvasása és kiszolgálása
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            if (err.code === 'ENOENT') {
-                // Ha a fájl nem található
-                res.writeHead(404, { 'Content-Type': 'text/html' });
-                res.end('<h1>404 - Oldal nem található</h1>', 'utf-8');
-            } else {
-                // Egyéb hiba
-                res.writeHead(500);
-                res.end(`Hiba: ${err.code}`);
-            }
-        } else {
-            // Fájl sikeres olvasása
-            res.writeHead(200, { 'Content-Type': contentType });
-            res.end(content, 'utf-8');
-        }
-    });
+    const query = `INSERT INTO uzenet (nev, email, uzenet) VALUES (?, ?, ?)`;
+
+    try {
+        await db.execute(query, [nev, email, uzenet]);
+        res.status(201).json({ message: 'Üzenet sikeresen elmentve.' });
+    } catch (err) {
+        console.error('Hiba történt az üzenet mentésekor:', err);
+        res.status(500).json({ message: 'Hiba történt az üzenet mentésekor.' });
+    }
 });
 
 
+// Statikus fájlok kiszolgálása (index.html, contact.html stb.)
+app.use(express.static(path.join(__dirname, 'public')));
 
-
-
-// Szerver futtatása
+// Szerver indítása
 const PORT = 3000;
-server.listen(PORT, () => {
-    console.log(`fut http://localhost:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Szerver fut a http://localhost:${PORT} címen`);
 });
