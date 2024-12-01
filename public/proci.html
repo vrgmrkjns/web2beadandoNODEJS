@@ -71,27 +71,43 @@
     <!-- Page Header Start -->
     <div class="container-fluid page-header py-5 mb-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container text-center py-5">
-            <h1 class="display-3 text-white text-uppercase mb-3 animated slideInDown">Üzenetek</h1>
+            <h1 class="display-3 text-white text-uppercase mb-3 animated slideInDown">Processzorok</h1>
             <nav aria-label="breadcrumb animated slideInDown">
                 <ol class="breadcrumb justify-content-center text-uppercase mb-0">
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Főoldal</a></li>
-                    <li class="breadcrumb-item"><a class="text-white" href="#">Oldalak</a></li>
-                    <li class="breadcrumb-item text-primary active" aria-current="page">Üzenetek</li>
+                    <li class="breadcrumb-item"><a class="text-white" href="/">Főoldal</a></li>
+                    <li class="breadcrumb-item"><a class="text-white" href="/">Oldalak</a></li>
+                    <li class="breadcrumb-item text-primary active" aria-current="page">Processzorok</li>
                 </ol>
             </nav>
         </div>
     </div>
     <!-- Page Header End -->
 
-
     <!-- Service Start -->
     <div class="container-xxl py-5">
         <div class="container">
             <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                <p class="d-inline-block bg-secondary text-primary py-1 px-4">Kínálat</p>
-                <h1 class="text-uppercase">Minden amit mi kínálunk</h1>
+                <p class="d-inline-block bg-secondary text-primary py-1 px-4">Processzorok</p>
+
             </div>
-            <div id="tabla" class="row g-5">
+            <div class="row g-5">
+                <table id="prociktabla">
+                    <thead>
+                      <tr>
+                        <th>ID</th>
+                        <th>Gyártó</th>
+                        <th>Típus</th>
+                      </tr>
+                    </thead>
+                    <tbody></tbody>
+                  </table>
+                
+                  <h2>Új processzor hozzáadása</h2>
+                  <form id="hozzaadd">
+                    <input style="margin: 5px; width: 250px;"  class="form-control" type="text" id="gyarto" placeholder="Gyártó" required>
+                    <input style="margin: 5px; width: 250px;" class="form-control" type="text" id="tipus" placeholder="Típus" required>
+                    <button style="margin: 5px; width: 250px;" class="btn btn-success" type="submit">Hozzáadás</button>
+                  </form>
 
             </div>
         </div>
@@ -99,13 +115,72 @@
     <!-- Service End -->
 
     <script>
-        // Adatok betöltése az /adatok útvonalról
-        fetch('/uzenetek')
-          .then(response => response.text())
-          .then(data => {
-            document.getElementById('tabla').innerHTML = data;
-          })
-          .catch(error => console.error('Hiba:', error));
+document.addEventListener('DOMContentLoaded', betolt);
+
+// Felhasználók listázása
+async function betolt() {
+    const response = await fetch('/proci');
+    const procik = await response.json();
+
+    const tbody = document.querySelector('#prociktabla tbody');
+    tbody.innerHTML = '';
+
+    procik.forEach(proci => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${proci.id}</td>
+            <td>${proci.gyarto}</td>
+            <td>${proci.tipus}</td>
+            <td>
+                <button class="btn btn-danger" onclick="torol(${proci.id})">Törlés</button>
+                <button class="btn btn-warning" onclick="frissit(${proci.id}, '${proci.gyarto}', '${proci.tipus}')">Szerkesztés</button>
+            </td>
+        `;
+        tbody.appendChild(row);
+    });
+}
+
+// Új felhasználó hozzáadása
+document.getElementById('hozzaadd').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const gyarto = document.getElementById('gyarto').value;
+    const tipus = document.getElementById('tipus').value;
+
+    const response = await fetch('/proci', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ gyarto, tipus })
+    });
+
+    if (response.ok) {
+        betolt();
+        e.target.reset();
+    }
+});
+
+// Felhasználó törlése
+async function torol(id) {
+    const response = await fetch(`/proci/${id}`, { method: 'DELETE' });
+    if (response.ok) betolt();
+}
+
+// Felhasználó frissítése (egyszerű prompt ablakos megoldással)
+async function frissit(id, mostGyarto, mostTipus) {
+    const ujGyarto = prompt('Írd be az új Gyártó nevét:', mostGyarto);
+    const ujTipus = prompt('Írd be az új Típus nevét:', mostTipus);
+
+    if (ujGyarto && ujTipus) {
+        const response = await fetch(`/proci/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ gyarto: ujGyarto, tipus: ujTipus })
+        });
+
+        if (response.ok) betolt();
+    }
+}
+
     </script>
 
     <!-- Footer Start -->
@@ -135,9 +210,9 @@
                 </div>
                 <div class="col-lg-4 col-md-6">
                     <h4 class="text-uppercase mb-4">Gyors elérés</h4>
-                    <a class="btn btn-link" href="">Rólunk</a>
-                    <a class="btn btn-link" href="">Termékek</a>
-                    <a class="btn btn-link" href="">Írj nekünk</a>
+                    <a class="btn btn-link" href="about.html">Rólunk</a>
+                    <a class="btn btn-link" href="kinalat.html">Termékek</a>
+                    <a class="btn btn-link" href="contact.html">Írj nekünk</a>
                 </div>
             </div>
         </div>

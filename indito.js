@@ -204,6 +204,58 @@ app.post('/contact', async (req, res) => {
 });
 
 
+
+//CRUD menü
+//CREATE
+app.post('/proci', async (req, res) => {
+    const { gyarto, tipus } = req.body;
+    try {
+        const [result] = await db.execute('INSERT INTO processzor (gyarto, tipus) VALUES (?, ?)', [gyarto, tipus]);
+        res.status(201).json({ id: result.insertId, gyarto, tipus });
+    } catch (err) {
+        res.status(500).json({ error: 'Hiba a létrehozás során', details: err });
+    }
+});
+
+//READ
+app.get('/proci', async (req, res) => {
+    try {
+        const [rows] = await db.query('SELECT * FROM processzor');
+        res.json(rows);
+    } catch (err) {
+        res.status(500).json({ error: 'Hiba az adatok lekérése során', details: err });
+    }
+});
+
+//UPDATE
+app.put('/proci/:id', async (req, res) => {
+    const { id } = req.params;
+    const { gyarto, tipus } = req.body;
+    try {
+        const [result] = await db.execute('UPDATE processzor SET gyarto = ?, tipus = ? WHERE id = ?', [gyarto, tipus, id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Nem jó' });
+        }
+        res.json({ message: 'Adat frissítve', id });
+    } catch (err) {
+        res.status(500).json({ error: 'Hiba a frissítés során', details: err });
+    }
+});
+
+//DELETE
+app.delete('/proci/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [result] = await db.execute('DELETE FROM processzor WHERE id = ?', [id]);
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Nem található' });
+        }
+        res.json({ message: 'Adat törölve', id });
+    } catch (err) {
+        res.status(500).json({ error: 'Hiba a törlés során', details: err });
+    }
+});
+
 // Statikus fájlok kiszolgálása
 app.use(express.static(path.join(__dirname, 'public')));
 
