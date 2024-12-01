@@ -60,7 +60,6 @@ app.get('/adatok', async (req, res) => {
               processzor ON gep.processzorid = processzor.id
           `);
 
-        // HTML táblázat generálása
         let htmlTable = `
         <table class="table">
             <thead>
@@ -131,12 +130,10 @@ app.get('/adatok', async (req, res) => {
 
 
 //Üzenetek tábla
-//3 táblás Táblázat
 app.get('/uzenetek', async (req, res) => {
     try {
         const [rows] = await db.execute(`SELECT uzenetID, nev, email, uzenet, DATE_FORMAT(ido, '%Y-%m-%d %H:%i') AS joido FROM uzenet ORDER BY joido DESC`);
 
-        // HTML táblázat generálása
         let htmlTable2 = `
         <table class="table">
             <thead>
@@ -151,7 +148,7 @@ app.get('/uzenetek', async (req, res) => {
                         Email
                     </th>
                     <th>
-                        Uzenet
+                        Üzenet
                     </th>
                     <th>
                         Küldés ideje
