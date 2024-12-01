@@ -134,7 +134,7 @@ app.get('/adatok', async (req, res) => {
 //3 táblás Táblázat
 app.get('/uzenetek', async (req, res) => {
     try {
-        const [rows] = await db.execute(`SELECT uzenetID, nev, email, uzenet, DATE_FORMAT(ido, '%Y-%m-%d %H:%i') AS joido FROM uzenet`);
+        const [rows] = await db.execute(`SELECT uzenetID, nev, email, uzenet, DATE_FORMAT(ido, '%Y-%m-%d %H:%i') AS joido FROM uzenet ORDER BY joido DESC`);
 
         // HTML táblázat generálása
         let htmlTable2 = `
