@@ -93,7 +93,7 @@ app.get('/adatok', async (req, res) => {
                         Ár
                     </th>
                     <th>
-                        DB
+                        Darab
                     </th>
                 </tr>
             </thead>
@@ -112,7 +112,7 @@ app.get('/adatok', async (req, res) => {
                 <td>${row.procgyart} ${row.proctip}</td>
                 <td>${row.nev}</td>
                 <td>${row.ar}</td>
-                <td>${row.db}</td>
+                <td>${row.db} db</td>
               </tr>
             `;
           });
@@ -123,6 +123,62 @@ app.get('/adatok', async (req, res) => {
         `;
 
         res.send(htmlTable);
+    } catch (err) {
+        console.error('Hiba a lekérdezés során:', err);
+        res.status(500).send('Hiba a lekérdezés során.');
+    }
+});
+
+
+//Üzenetek tábla
+//3 táblás Táblázat
+app.get('/uzenetek', async (req, res) => {
+    try {
+        const [rows] = await db.execute(`SELECT uzenetID, nev, email, uzenet, DATE_FORMAT(ido, '%Y-%m-%d %H:%i') AS joido FROM uzenet`);
+
+        // HTML táblázat generálása
+        let htmlTable2 = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        #
+                    </th>
+                    <th>
+                        Név
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Uzenet
+                    </th>
+                    <th>
+                        Küldés ideje
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+      `;
+
+        rows.forEach(row => {
+            htmlTable2 += `
+              <tr>
+                <td>${row.uzenetID}</td>
+                <td>${row.nev}</td>
+                <td>${row.email}"</td>
+                <td>${row.uzenet} MB</td>
+                <td>${row.ido} GB</td>
+              </tr>
+            `;
+          });
+
+        htmlTable2 += `
+        </tbody>
+        </table>
+        `;
+
+        res.send(htmlTable2);
     } catch (err) {
         console.error('Hiba a lekérdezés során:', err);
         res.status(500).send('Hiba a lekérdezés során.');
