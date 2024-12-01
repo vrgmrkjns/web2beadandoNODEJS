@@ -166,9 +166,9 @@ app.get('/uzenetek', async (req, res) => {
               <tr>
                 <td>${row.uzenetID}</td>
                 <td>${row.nev}</td>
-                <td>${row.email}"</td>
-                <td>${row.uzenet} MB</td>
-                <td>${row.ido} GB</td>
+                <td>${row.email}</td>
+                <td>${row.uzenet}</td>
+                <td>${row.joido}</td>
               </tr>
             `;
           });
