@@ -91,29 +91,22 @@
                 <p class="d-inline-block bg-secondary text-primary py-1 px-4">Kínálat</p>
                 <h1 class="text-uppercase">Minden amit mi kínálunk</h1>
             </div>
-            <div class="row g-4">
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <td>
-                                Gyártó
-                            </td>
-                            <td>
-                                Típus
-                            </td>
-                            <td>
-                                Kijelző
-                            </td>
-                            <td>
-                                Memória
-                            </td>
-                        </tr>
-                    </thead>
-                </table>
+            <div id="tabla" class="row g-5">
+
             </div>
         </div>
     </div>
     <!-- Service End -->
+
+    <script>
+        // Adatok betöltése az /adatok útvonalról
+        fetch('/adatok')
+          .then(response => response.text())
+          .then(data => {
+            document.getElementById('tabla').innerHTML = data;
+          })
+          .catch(error => console.error('Hiba:', error));
+    </script>
 
     <!-- Footer Start -->
     <div class="container-fluid bg-secondary text-light footer mt-5 pt-5 wow fadeIn" data-wow-delay="0.1s">

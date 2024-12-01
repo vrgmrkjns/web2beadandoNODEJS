@@ -35,6 +35,101 @@ async function adatbazisCsatlakozas() {
 
 adatbazisCsatlakozas().catch(err => console.error('Hiba a csatlakozás során:', err));
 
+
+//3 táblás Táblázat
+app.get('/adatok', async (req, res) => {
+    try {
+        const [rows] = await db.execute(`
+            SELECT 
+              gep.gyarto AS gepgyart,
+              gep.tipus AS geptip,
+              gep.kijelzo,
+              gep.memoria,
+              gep.merevlemez,
+              gep.videovezerlo,
+              processzor.gyarto AS procgyart,
+              processzor.tipus AS proctip,
+              oprendszer.nev,
+              gep.ar,
+              gep.db        
+            FROM 
+              gep
+            JOIN 
+              oprendszer ON gep.oprendszerid = oprendszer.id
+            JOIN 
+              processzor ON gep.processzorid = processzor.id
+          `);
+
+        // HTML táblázat generálása
+        let htmlTable = `
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        Gyártó
+                    </th>
+                    <th>
+                        Típus
+                    </th>
+                    <th>
+                        Kijelző
+                    </th>
+                    <th>
+                        Memória
+                    </th>
+                    <th>
+                        Merevlemez
+                    </th>
+                    <th>
+                        Videókártya
+                    </th>
+                    <th>
+                        Processzor
+                    </th>
+                    <th>
+                        Rendszer
+                    </th>
+                    <th>
+                        Ár
+                    </th>
+                    <th>
+                        DB
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+      `;
+
+        rows.forEach(row => {
+            htmlTable += `
+              <tr>
+                <td>${row.gepgyart}</td>
+                <td>${row.geptip}</td>
+                <td>${row.kijelzo}"</td>
+                <td>${row.memoria} MB</td>
+                <td>${row.merevlemez} GB</td>
+                <td>${row.videovezerlo}</td>
+                <td>${row.procgyart} ${row.proctip}</td>
+                <td>${row.nev}</td>
+                <td>${row.ar}</td>
+                <td>${row.db}</td>
+              </tr>
+            `;
+          });
+
+        htmlTable += `
+        </tbody>
+        </table>
+        `;
+
+        res.send(htmlTable);
+    } catch (err) {
+        console.error('Hiba a lekérdezés során:', err);
+        res.status(500).send('Hiba a lekérdezés során.');
+    }
+});
+
+
 // Kapcsolatfelvételi űrlap kezelése
 app.post('/contact', async (req, res) => {
     let { nev, email, uzenet } = req.body;
@@ -48,10 +143,10 @@ app.post('/contact', async (req, res) => {
 
     try {
         await db.execute(query, [nev, email, uzenet]);
-        res.status(201).json({ message: 'Üzenet sikeresen elmentve.' });
+        res.status(201).json({ message: 'Üzenet sikeresen elküldve.' });
     } catch (err) {
         console.error('Hiba történt az üzenet mentésekor:', err);
-        res.status(500).json({ message: 'Hiba történt az üzenet mentésekor.' });
+        res.status(500).json({ message: 'Hiba történt az üzenet küldése során.' });
     }
 });
 
