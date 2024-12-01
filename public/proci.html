@@ -117,7 +117,7 @@
     <script>
 document.addEventListener('DOMContentLoaded', betolt);
 
-// Felhasználók listázása
+// Proci listázása
 async function betolt() {
     const response = await fetch('/proci');
     const procik = await response.json();
@@ -140,7 +140,7 @@ async function betolt() {
     });
 }
 
-// Új felhasználó hozzáadása
+// Új proci hozzáadása
 document.getElementById('hozzaadd').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -159,13 +159,13 @@ document.getElementById('hozzaadd').addEventListener('submit', async function (e
     }
 });
 
-// Felhasználó törlése
+// Proci törlése
 async function torol(id) {
     const response = await fetch(`/proci/${id}`, { method: 'DELETE' });
     if (response.ok) betolt();
 }
 
-// Felhasználó frissítése (egyszerű prompt ablakos megoldással)
+// Proci frissítése
 async function frissit(id, mostGyarto, mostTipus) {
     const ujGyarto = prompt('Írd be az új Gyártó nevét:', mostGyarto);
     const ujTipus = prompt('Írd be az új Típus nevét:', mostTipus);
